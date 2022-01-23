@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<title>Potree Viewer</title>
+
+	<link rel="stylesheet" type="text/css" href="../build/potree/potree.css">
+	<link rel="stylesheet" type="text/css" href="../libs/jquery-ui/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="../libs/openlayers3/ol.css">
+	<link rel="stylesheet" type="text/css" href="../libs/spectrum/spectrum.css">
+	<link rel="stylesheet" type="text/css" href="../libs/jstree/themes/mixed/style.css">
+</head>
+
+<body>
+	<script src="../libs/jquery/jquery-3.1.1.min.js"></script>
+	<script src="../libs/spectrum/spectrum.js"></script>
+	<script src="../libs/jquery-ui/jquery-ui.min.js"></script>
+	
+	
+	<script src="../libs/other/BinaryHeap.js"></script>
+	<script src="../libs/tween/tween.min.js"></script>
+	<script src="../libs/d3/d3.js"></script>
+	<script src="../libs/proj4/proj4.js"></script>
+	<script src="../libs/openlayers3/ol.js"></script>
+	<script src="../libs/i18next/i18next.js"></script>
+	<script src="../libs/jstree/jstree.js"></script>
+	<script src="../build/potree/potree.js"></script>
+	<script src="../libs/plasio/js/laslaz.js"></script>
+	
+	<!-- INCLUDE ADDITIONAL DEPENDENCIES HERE -->
+	<!-- INCLUDE SETTINGS HERE -->
+	
+	<div class="potree_container" style="position: absolute; width: 100%; height: 100%; left: 0px; top: 0px; ">
+		<div id="potree_render_area" style="background-image: url('../build/potree/resources/images/background.jpg');"></div>
+		<div id="potree_sidebar_container"> </div>
+	</div>
+	
+	<script type="module">
+
+	import * as THREE from "../libs/three.js/build/three.module.js";
+	
+		window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
+		
+		viewer.setEDLEnabled(true);
+		viewer.setFOV(60);
+		viewer.setPointBudget(1_000_000);
+		viewer.setMinNodeSize(10);
+		viewer.loadSettingsFromURL();
+		
+		viewer.setDescription(`Sorvilier point cloud courtesy of <a target='_blank' href='https://www.sigeom.ch/'>sigeom sa</a>`);
+		
+		viewer.loadGUI(() => {
+			viewer.setLanguage('en');
+			$("#menu_scene").next().show();
+			$("#menu_tools").next().show();
+			viewer.toggleSidebar();
+		});
+
+
+		// wrap load code into an async function so that we can use "await"
+		async function load(){
+
+			// specify point clouds that are to be loaded and callbacks to invoke 
+			let pointclouds = [
+				{
+					url: "http://192.168.192.109:8080/Ebene1-1/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene1-1";
+
+						let material = pointcloud.material;
+						material.size = 1;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene1-2/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene1-2";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene1-3/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene1-3";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene1-4/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene1-4";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene1-5/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene1-5";
+						
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},
+				{
+					url: "http://192.168.192.109:8080/Ebene1-6/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene1-6";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene1-Aussen/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene1-Aussen";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene2-1/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene2-1";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene2-2/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene2-2";
+						
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},
+				{
+					url: "http://192.168.192.109:8080/Ebene2-3/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene2-3";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene2-4/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene2-4";
+
+		
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene3-1/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene3-1";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene3-2/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene3-2";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},
+				{
+					url: "http://192.168.192.109:8080/Ebene4-1/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene4-1";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene4-2/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene4-2";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene4-3/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene4-3";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene4-4/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene4-4";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene5-1/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene5-1";
+						
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},
+				{
+					url: "http://192.168.192.109:8080/Ebene5-2/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene5-2";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene5-3/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene5-3";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene5To7/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene5To7";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene6-1/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene6-1";
+
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene6-2/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene6-2";
+						
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				}
+				,{
+					url: "http://192.168.192.109:8080/Ebene6-3/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene6-3";
+						
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene7/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene7";
+						
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene9-1/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene9-1";
+						
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene9-2/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene9-2";
+						
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene9-3/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene9-3";
+						
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/Ebene9-4TurmDach/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "Ebene9-4TurmDach";
+						
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				},{
+					url: "http://192.168.192.109:8080/EbeneAussenBahnseite/output/metadata.json", 
+					callback: (pointcloud) => {
+						pointcloud.name = "EbeneAussenBahnseite";
+						
+						let material = pointcloud.material;
+						material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+						material.size = 1;
+					},
+				}
+			];
+
+			// start loading all point clouds asynchronously, get a promise for each one that resolves when it's loaded
+			let promises = pointclouds.map(p => Potree.loadPointCloud(p.url));
+			
+			// now iterate over all promises in order
+			for(let i = 0; i < promises.length; i++){
+
+				// wait until this point cloud is loaded before processing the next one
+				let pointcloud = (await promises[i]).pointcloud;
+
+				pointclouds[i].callback(pointcloud);
+				viewer.scene.addPointCloud(pointcloud);
+			}
+
+			
+			viewer.scene.view.setView(
+				[589974.341, 231698.397, 986.146],
+				[589851.587, 231428.213, 715.634],
+			);
+		}
+
+		load();
+	</script>
+	
+	
+  </body>
+</html>

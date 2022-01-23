@@ -1276,7 +1276,7 @@ export class Sidebar{
 		sldPointBudget.slider({
 			value: this.viewer.getPointBudget(),
 			min: 100 * 1000,
-			max: 10 * 1000 * 1000,
+			max: 50 * 1000 * 1000,
 			step: 1000,
 			slide: (event, ui) => { this.viewer.setPointBudget(ui.value); }
 		});
