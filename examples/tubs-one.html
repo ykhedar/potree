@@ -67,12 +67,9 @@
 		
 		viewer.setScene(aerialPtCloud);
 
-		viewer.loadProject("http://192.168.192.109:8080/aerial/output/project.json5").then( () => {
-			console.log("project loaded");
-		});
 
 		// Sorvilier point cloud in scene 1
-		Potree.loadPointCloud("http://192.168.192.109:8080/aerial/output/metadata.json", "Rammelsberg Aerial View", function(e){
+		Potree.loadPointCloud("http://192.168.192.109:8080/onebuilding/output/metadata.json", "Rammelsberg Aerial View", function(e){
 			
 			aerialPtCloud.addPointCloud(e.pointcloud);
 			aerialPtCloud.view.position.set(597474.5515981456,5749682.608718909,507.63896238489946);
@@ -83,86 +80,9 @@
 			material.size = 1;
 			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
 
-			{
-				{
-					let elTitle = $(`
-						<span>
-							Rammelsberg Heritage Site
-							<img src="${Potree.resourcePath}/icons/goto.svg" 
-								name="action_set_scene"
-								class="annotation-action-icon" 
-								style="filter: invert(1);" />
-						</span>
-					`);
-					elTitle.find("img[name=action_set_scene]").click( (event) => {
-						// event.stopPropagation();
-						// viewer.setScene(sceneLion); 
-						goToURL();
-					});
-					elTitle.toString = () => "About Annotations";
-
-					let aAbout1 = new Potree.Annotation({
-						position: [597737.033, 5749797.384, 410.625], 
-						title: elTitle,
-						//cameraPosition: [590105.53, 231541.63, 782.05],
-						//cameraTarget: [590043.63, 231488.79, 740.78],
-						description: `<img src=http://192.168.192.109:8080/aerial/output/Bergwerk_Rammelsberg.jpg width="400" height="300"/>`
-					});
-					aerialPtCloud.annotations.add(aAbout1);
-				} // Add annotation for Building 5 at: 597699.384, 5749794.481, 394.286
-
-				{
-					let elTitle = $(`
-						<span>
-							Building 5
-							<img src="${Potree.resourcePath}/icons/goto.svg" 
-								name="action_set_scene"
-								class="annotation-action-icon" 
-								style="filter: invert(1);" />
-						</span>
-					`);
-					elTitle.find("img[name=action_set_scene]").click( (event) => {
-						event.stopPropagation();
-						viewer.setScene(sceneLion); 
-					});
-					elTitle.toString = () => "Building 5";
-					
-					let aAbout1 = new Potree.Annotation({
-						position: [597699.384, 5749794.481, 394.286], 
-						title: elTitle,
-						//cameraPosition: [590105.53, 231541.63, 782.05],
-						//cameraTarget: [590043.63, 231488.79, 740.78],
-						description: `<ul>Click to go inside Building 5</ul>`
-					});
-					aerialPtCloud.annotations.add(aAbout1);
-				} // Add annotation for Building 5 at: 597699.384, 5749794.481, 394.286
-
-	
-			}
-		}); // Center of Building 5: 597714.397, 5749794.758, 389.947
-
-		Potree.loadPointCloud("http://192.168.192.109:8080/twobuilding/output/metadata.json", "Building 5", function(e){
-			
-			sceneLion.addPointCloud(e.pointcloud);
-			sceneLion.view.position.set(597710.397, 5749794.758, 389.947);
-			//sceneLion.view.lookAt(new THREE.Vector3(597788.5718361299,5749873.649193719,254.2901884110625));
-
-			let material = e.pointcloud.material;
-			material.size = 1;
-			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
-
-			sceneLion.addAnnotation([597714.397, 5749794.758, 389.947], {
-				"title": "Go back to aerial view",
-				"actions": [{
-					"icon": Potree.resourcePath + "/icons/goto.svg",
-					"onclick": function(){
-						viewer.setScene(aerialPtCloud);
-					}
-				}]
-			});
 			
 		});
-
+		
 		
 	</script>
 	
